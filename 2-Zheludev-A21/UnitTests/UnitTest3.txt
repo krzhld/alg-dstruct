@@ -1,3 +1,0 @@
-Abc	1
-Ghi	3
-Def	2
