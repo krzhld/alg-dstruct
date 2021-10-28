@@ -1,0 +1,7 @@
+London	1
+Britain	7
+Capital	4
+Great	6
+Is	2
+The	3
+Of	1
