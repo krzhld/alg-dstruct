@@ -23,4 +23,5 @@ void StressTest() {
 	BFS(fptr);
 	double time = (double)(clock() - start) / CLOCKS_PER_SEC;
 	fprintf(stdout, "\n%f\n", time);
+	fclose(fptr);
 }
