@@ -24,9 +24,9 @@
 	Formatted:	239 GB
  
 	Test results:
-	Vertex: 70000
-	Time: 32s
-	Memory: 4.4GB
+	Vertex: 40000
+	Time: 21s
+	Memory: 3.1GB
 */
 
 int main() {
