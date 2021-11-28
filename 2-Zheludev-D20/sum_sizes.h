@@ -1,5 +1,4 @@
 #pragma once
-#include "stack.h"
 
 enum {
 	FILE_ERROR = -100,
@@ -8,23 +7,8 @@ enum {
 	INITIALIZATION_ERROR
 } errors;
 
-#ifndef TRUE
-#define TRUE 1
-#endif // !TRUE
+int SumSizes(uint* numberTouchedElements, long long* numberCombinations);
 
-#ifndef FALSE
-#define FALSE 0
-#endif
-
-typedef char boolean;
-
-typedef struct {
-	int size;
-	boolean isUsed;
-} plentyElem_t;
-
-int SumSizes();
-
-int FindSubset(plentyElem_t* plenty, stack_t* curSolution, int N, int requiredAmount);
+int FindSubset(plentyElem_t* plenty, stack_t* curSolution, uint N, uint requiredAmount, uint curIndex, long long* numberCombinations);
 
 void PrintSolution(stack_t* stack, FILE* fp);

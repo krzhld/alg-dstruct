@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
+#include "types.h"
 #include "sum_sizes.h"
 
 /*
@@ -26,33 +28,47 @@
 	Capacity:	239 GB
 	Formatted:	239 GB
 
-	Test results:
-	Number of elements: 40.000.000
-	Time: 35s
-	Memory: 313 MB
+	Stress test results (case of full search, when sum of elements is less than required sum):
+	Number of elements of the set: 30
+	Execution time: 76 sec
+	Number of touched elements: 30
+	Number of combinations: 1073741823
 */
+
+/* 0 < B < 2 ^ 32 */
+uint pseudoRandomB(void) {
+	srand(time(NULL));
+	double probability = ((double)rand() / (RAND_MAX + 1)); // 0 <= res < 1
+	if (probability == 0)
+		return 1;
+	uint res = (uint)(probability * pow(2, 32));
+	return res;
+}
 
 void StressTest() {
 	FILE* fp = fopen("input.txt", "wt");
 	if (fp == NULL)
 		return;
 
-	int N = (int)4e7;
-	srand(time(NULL));
-	int B = rand();
+	uint N = 30;
+	uint B = pseudoRandomB();
 
-	fprintf(fp, "%d\n%d\n", B, N);
-	for (int i = 0; i < N; i++)
+	srand(time(NULL));
+	fprintf(fp, "%u\n%u\n", B, N);
+	for (uint i = 0; i < N; i++)
 		fprintf(fp, "%d ", 1 + rand());
 
 	fprintf(fp, "\n");
 	fclose(fp);
 	
+	long long numberCombinations = 0;
+	uint numberTouchedElements = 0;
 	int time = clock();
-	SumSizes();
+	SumSizes(&numberTouchedElements, &numberCombinations);
 	time = (clock() - time) / 1000;
 
-	fprintf(stdout, "Stress test\nNumber of elements of the set: %d\nExecution time: %d sec", N, time);
+	fprintf(stdout, "Stress test\nNumber of elements of the set: %u\nExecution time: %d sec\nNumber of touched elements: %u\nNumber of combinations: %lld\n",
+		N, time, numberTouchedElements, numberCombinations);
 }
 
 int main(void) {

@@ -1,18 +1,19 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
+#include "types.h"
 #include "sum_sizes.h"
 #include "stack.h"
 
-int SumSizes() {
+int SumSizes(uint* numberTouchedElements, long long* numberCombinations) {
 	FILE* fp = fopen("input.txt", "rt");
 	if (fp == NULL) {
 		fprintf(stderr, "Opening file error!\n");
 		return FILE_ERROR;
 	}
 
-	int B, N;
-	if (fscanf(fp, "%d\n%d", &B, &N) != 2) {
+	uint N, B;
+	if (fscanf(fp, "%u\n%u", &B, &N) != 2) {
 		fprintf(stderr, "Reading B and N error!\n");
 		return READING_ERROR;
 	}
@@ -22,12 +23,13 @@ int SumSizes() {
 		fprintf(stderr, "Allocation memory error!\n");
 		return ALLOCATION_ERROR;
 	}
-	for (int i = 0; i < N; i++) {
-		if (fscanf(fp, "%d", &plenty[i].size) != 1) {
+	for (uint i = 0; i < N; i++) {
+		if (fscanf(fp, "%u", &plenty[i].size) != 1) {
 			fprintf(stderr, "Reading plenty error!\n");
 			return READING_ERROR;
 		}
 		plenty[i].isUsed = FALSE;
+		plenty[i].isTouched = FALSE;
 	}
 
 	int checkEndFile;
@@ -40,38 +42,46 @@ int SumSizes() {
 
 	stack_t* curSolution = StackInit(N);
 
-	FindSubset(plenty, curSolution, N, B);
+	FindSubset(plenty, curSolution, N, B, 0, numberCombinations);
 
 	fp = fopen("output.txt", "wt");
 	if (fp == NULL) {
 		fprintf(stderr, "Opening file error!\n");
 		return FILE_ERROR;
 	}
-	
+
 	PrintSolution(curSolution, fp);
-	FreeStack(curSolution);
 	fclose(fp);
+	FreeStack(curSolution);
+
+	for (uint i = 0; i < N; i++)
+		if (plenty[i].isTouched == TRUE)
+			++(*numberTouchedElements);
 
 	return 0;
 }
 
-int FindSubset(plentyElem_t* plenty, stack_t* curSolution, int N, int requiredAmount) {
+int FindSubset(plentyElem_t* plenty, stack_t* curSolution, uint N, uint requiredAmount, uint curIndex, long long* numberCombinations) {
 	static int returnRes = 0;
-	for (int i = 0; i < N; i++) {
-		if (plenty[i].size < requiredAmount && plenty[i].isUsed == FALSE) {
-			StackPush(curSolution, plenty[i].size, i);
-			plenty[i].isUsed = TRUE;
-			requiredAmount -= plenty[i].size;
-			returnRes = FindSubset(plenty, curSolution, N, requiredAmount);
-			if (returnRes == 0)
-				return 0;
-			requiredAmount += returnRes;
-		}
-		else {
-			if (plenty[i].size == requiredAmount && plenty[i].isUsed == FALSE) {
+	for (uint i = curIndex; i < N; i++) {
+		if (plenty[i].isTouched == FALSE)
+			plenty[i].isTouched = TRUE;
+		if (plenty[i].isUsed == FALSE) {
+			if (plenty[i].size < requiredAmount) {
+				++(*numberCombinations);
 				StackPush(curSolution, plenty[i].size, i);
 				plenty[i].isUsed = TRUE;
-				requiredAmount -= plenty[i].size; // for breakpoint
+				requiredAmount -= plenty[i].size;
+				returnRes = FindSubset(plenty, curSolution, N, requiredAmount, i + 1, numberCombinations);
+				if (returnRes == 0)
+					return 0;
+				requiredAmount += returnRes;
+			}
+			if (plenty[i].size == requiredAmount) {
+				++(*numberCombinations);
+				StackPush(curSolution, plenty[i].size, i);
+				plenty[i].isUsed = TRUE;
+				requiredAmount -= plenty[i].size;
 				return 0;
 			}
 		}
@@ -87,9 +97,9 @@ int FindSubset(plentyElem_t* plenty, stack_t* curSolution, int N, int requiredAm
 
 void PrintSolution(stack_t* stack, FILE* fp) {
 	if (stack->cur == -1) {
-		fprintf(fp, "0");
+		fprintf(fp, "0 ");
 		return;
 	}	
 	for (int i = 0; i <= stack->cur; i++)
-		fprintf(fp, "%d ", stack->arr[i].size);
+		fprintf(fp, "%u ", stack->arr[i].size);
 }

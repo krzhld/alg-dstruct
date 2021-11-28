@@ -1,19 +1,20 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include "types.h"
 #include "stack.h"
 
-stack_t* StackInit(int size) {
+stack_t* StackInit(uint sizeStack) {
 	stack_t* stack = (stack_t*)malloc(sizeof(stack_t));
 	if (stack == NULL) {
 		fprintf(stderr, "Allocation memory error!\n");
 		return NULL;
 	}
-	stack->arr = (stackElem_t*)malloc(size * sizeof(stackElem_t));
+	stack->arr = (stackElem_t*)malloc(sizeStack * sizeof(stackElem_t));
 	if (stack->arr == NULL) {
 		fprintf(stderr, "Allocation memory error!\n");
 		return NULL;
 	}
-	for (int i = 0; i < size; i++) {
+	for (uint i = 0; i < sizeStack; i++) {
 		stack->arr[i].size = 0;
 		stack->arr[i].index = -1;
 	}
@@ -21,7 +22,7 @@ stack_t* StackInit(int size) {
 	return stack;
 }
 
-void StackPush(stack_t* stack, int sizeElem, int indexElem) {
+void StackPush(stack_t* stack, uint sizeElem, int indexElem) {
 	stack->cur++;
 	stack->arr[stack->cur].size = sizeElem;
 	stack->arr[stack->cur].index = indexElem;

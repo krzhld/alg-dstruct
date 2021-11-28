@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include "gtest/gtest.h"
-#include "..\sum_sizes.h"
+#include "..\types.h"
 #include "..\sum_sizes.c"
 #include "..\stack.c"
 
@@ -26,8 +26,12 @@ TEST(SumSizesTest, HandleReadingOverBuffer) {
 	int N = 4; // N > sizePlenty
 	int B = 6;
 	PrintToInputFile(plenty, sizePlenty, N, B);
-	int res = SumSizes();
+	uint numberTouchedElem = 0;
+	long long numberCombinations = 0;
+	int res = SumSizes(&numberTouchedElem, &numberCombinations);
 	EXPECT_TRUE(res == READING_ERROR);
+	EXPECT_EQ(numberTouchedElem, 0);
+	EXPECT_EQ(numberCombinations, 0);
 }
 
 TEST(SumSizesTest, HandleNotCompletelyInitialization) {
@@ -38,8 +42,12 @@ TEST(SumSizesTest, HandleNotCompletelyInitialization) {
 	int B = 6;
 
 	PrintToInputFile(plenty, sizePlenty, N, B);
-	int res = SumSizes();
+	uint numberTouchedElem = 0;
+	long long numberCombinations = 0;
+	int res = SumSizes(&numberTouchedElem, &numberCombinations);
 	EXPECT_TRUE(res == INITIALIZATION_ERROR);
+	EXPECT_EQ(numberTouchedElem, 0);
+	EXPECT_EQ(numberCombinations, 0);
 }
 
 TEST(SumSizesTest, HandleZeroCodeError_AnswerFullPlenty) {
@@ -50,8 +58,12 @@ TEST(SumSizesTest, HandleZeroCodeError_AnswerFullPlenty) {
 	int B = 6;
 
 	PrintToInputFile(plenty, sizePlenty, N, B);
-	int res = SumSizes();
+	uint numberTouchedElem = 0;
+	long long numberCombinations = 0;
+	int res = SumSizes(&numberTouchedElem, &numberCombinations);
 	EXPECT_TRUE(res == 0);
+	EXPECT_EQ(numberTouchedElem, 3); // 1 2 3
+	EXPECT_EQ(numberCombinations, 3); // 1; 1 2; 1 2 3
 
 	FILE* fp = fopen("output.txt", "rt");
 	char str[100];
@@ -67,8 +79,12 @@ TEST(SumSizesTest, CorrectDataHandleZeroCodeError_AnswerOneSubset) {
 	int B = 5;
 
 	PrintToInputFile(plenty, sizePlenty, N, B);
-	int res = SumSizes();
+	uint numberTouchedElem = 0;
+	long long numberCombinations = 0;
+	int res = SumSizes(&numberTouchedElem, &numberCombinations);
 	EXPECT_TRUE(res == 0);
+	EXPECT_EQ(numberTouchedElem, 3); // 1 2 3
+	EXPECT_EQ(numberCombinations, 5); // 1; 1 2; 1 3; 2; 2 3
 
 	FILE* fp = fopen("output.txt", "rt");
 	char str[100];
@@ -84,13 +100,17 @@ TEST(SumSizesTest, CorrectDataHandleZeroCodeError_AnswerNoSubset) {
 	int B = 7;
 
 	PrintToInputFile(plenty, sizePlenty, N, B);
-	int res = SumSizes();
+	uint numberTouchedElem = 0;
+	long long numberCombinations = 0;
+	int res = SumSizes(&numberTouchedElem, &numberCombinations);
 	EXPECT_TRUE(res == 0);
+	EXPECT_EQ(numberTouchedElem, 3); // 1 2 3
+	EXPECT_EQ(numberCombinations, 7); // 1; 1 2; 1 2 3; 1 3; 2; 2 3; 3
 
 	FILE* fp = fopen("output.txt", "rt");
 	char str[100];
 	fgets(str, 100, fp);
-	EXPECT_TRUE(strcmp(str, "0") == 0);
+	EXPECT_TRUE(strcmp(str, "0 ") == 0);
 }
 
 TEST(SumSizesTest, CorrectDataHandleZeroCodeError_AnswerTwoSubsets) {
@@ -101,11 +121,15 @@ TEST(SumSizesTest, CorrectDataHandleZeroCodeError_AnswerTwoSubsets) {
 	int B = 3;
 
 	PrintToInputFile(plenty, sizePlenty, N, B);
-	int res = SumSizes();
+	uint numberTouchedElem = 0;
+	long long numberCombinations = 0;
+	int res = SumSizes(&numberTouchedElem, &numberCombinations);
 	EXPECT_TRUE(res == 0);
+	EXPECT_TRUE(numberTouchedElem == 2); // 1 2
+	EXPECT_TRUE(numberCombinations == 2); // 1; 1 2
 
 	FILE* fp = fopen("output.txt", "rt");
 	char str[100];
 	fgets(str, 100, fp);
-	EXPECT_TRUE(strcmp(str, "1 2 ") == 0 || strcmp(str, "3 ") == 0);
+	EXPECT_TRUE(strcmp(str, "1 2 ") == 0);
 }
