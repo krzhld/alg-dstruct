@@ -5,7 +5,7 @@
 #define TRUE 1
 #endif
 
-#ifndef  FALSE
+#ifndef FALSE
 #define FALSE 0
 #endif
 
