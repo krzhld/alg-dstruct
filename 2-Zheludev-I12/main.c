@@ -184,6 +184,8 @@ void _insertNonfull(Node* node, int data) {
 }
 
 void Insert(int data) {
+	if (Search(data))
+		return;
 	if (root == NULL) {
 		root = _node();
 		root->keys[0] = data;
@@ -202,8 +204,6 @@ void Insert(int data) {
 }
 
 int Search(int data) {
-	if (Search(data))
-		return;
 	Node* cur = root;
 	int child_index = 0;
 	while (cur != NULL) {
