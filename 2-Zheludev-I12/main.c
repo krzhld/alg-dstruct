@@ -202,6 +202,8 @@ void Insert(int data) {
 }
 
 int Search(int data) {
+	if (Search(data))
+		return;
 	Node* cur = root;
 	int child_index = 0;
 	while (cur != NULL) {
